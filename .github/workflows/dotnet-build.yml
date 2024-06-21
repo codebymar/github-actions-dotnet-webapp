@@ -18,11 +18,10 @@ jobs:
           gh pr edit $PR --add-label 'invalid'
           gh pr comment $PR --body 'It looks like you edited `package*.json`, `.github/CODEOWNERS`, or `.github/workflows/**`. We do not allow contributions to these files. Please review our [contributing guidelines](https://github.com/octo-org/octo-repo/blob/main/CONTRIBUTING.md) for what contributions are accepted.'
 
-   hourly:
+  hourly:
     runs-on: ubuntu-latest
     steps:
-      - name: "Run hourly task"
+      - name: Run hourly task
         run: |
-          # Add your custom script here
           echo "Hourly task executed successfully!"
-          # You can add more commands or scripts here
+          # Add your custom script here
