@@ -1,25 +1,27 @@
-#-------------------------------------------------dotnet.yml-------------------------------------------------
-name: github-actions .NET
-
 on:
-push:
-branches: [ "main" ]
-pull_request:
-schedule:
-- cron: '0 0 * * 1'
+  push:
+    branches:
+      - main
+  schedule:
+    - cron: 0 * * * *
 
 jobs:
-build:
+  triage:
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Comment about changes we can't accept"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR: ${{ github.event.pull_request.html_url }}
+        run: |
+          gh pr edit $PR --add-label 'invalid'
+          gh pr comment $PR --body 'It looks like you edited `package*.json`, `.github/CODEOWNERS`, or `.github/workflows/**`. We do not allow contributions to these files. Please review our [contributing guidelines](https://github.com/octo-org/octo-repo/blob/main/CONTRIBUTING.md) for what contributions are accepted.'
 
-runs-on: ubuntu-latest
-
-steps:
-- uses: actions/checkout@v4
-- name: Setup .NET
-  uses: actions/setup-dotnet@v4
-  with:
-    dotnet-version: 8.0.x
-- name: Restore dependencies
-  run: dotnet restore **/*.csproj
-- name: Build
-  run: dotnet build **/*.csproj --no-restore
+   hourly:
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Run hourly task"
+        run: |
+          # Add your custom script here
+          echo "Hourly task executed successfully!"
+          # You can add more commands or scripts here
