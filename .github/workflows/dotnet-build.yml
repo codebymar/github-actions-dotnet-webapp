@@ -1,19 +1,26 @@
+#-------------------------------------------------dotnet.yml-------------------------------------------------
+name: github-actions .NET
+
 on:
-  pull_request:
-    branches:
-      - main
+push:
+branches: [ "main" ]
+pull_request:
+branches: [ "main" ]
+schedule:
+- cron: '0 0 * * 1'
 
 jobs:
-  triage:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-      - name: "Comment about changes we can't accept"
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PR: ${{ github.event.pull_request.html_url }}
-        if: github.event.pull_request
-        run: |
-          gh pr edit $PR --add-label 'invalid'
-          gh pr comment $PR --body 'It looks like you edited `package*.json`, `.github/CODEOWNERS`, or `.github/workflows/**`. We do not allow contributions to these files. Please review our [contributing guidelines](https://github.com/octo-org/octo-repo/blob/main/CONTRIBUTING.md) for what contributions are accepted.'
+build:
+
+runs-on: ubuntu-latest
+
+steps:
+- uses: actions/checkout@v4
+- name: Setup .NET
+  uses: actions/setup-dotnet@v4
+  with:
+    dotnet-version: 8.0.x
+- name: Restore dependencies
+  run: dotnet restore **/*.csproj
+- name: Build
+  run: dotnet build **/*.csproj --no-restore
